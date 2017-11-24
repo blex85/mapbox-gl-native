@@ -219,6 +219,7 @@ public class MapSnapshotter {
       throw new IllegalStateException("Snapshotter was already started");
     }
 
+    FileSource.getInstance(context).activate();
     this.callback = callback;
     this.errorHandler = errorHandler;
     nativeStart();
@@ -350,6 +351,7 @@ public class MapSnapshotter {
   protected void reset() {
     callback = null;
     errorHandler = null;
+    FileSource.getInstance(context).deactivate();
   }
 
   protected native void nativeInitialize(MapSnapshotter mapSnapshotter,

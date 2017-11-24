@@ -6,10 +6,8 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.constants.MapboxConstants;
-
 import timber.log.Timber;
 
 /**
@@ -120,6 +118,7 @@ public class FileSource {
 
   private long nativePtr;
   private long activeCounter;
+  // track state if was paused, the filesource activates itself on initialisation
   private boolean wasPaused;
 
   private FileSource(String cachePath, AssetManager assetManager) {
@@ -135,6 +134,11 @@ public class FileSource {
   }
 
   public void deactivate() {
+    if (activeCounter == 0) {
+      // MapSnapshotter cancel has execution paths that can call deactivate more often as activate
+      return;
+    }
+
     activeCounter--;
     if (activeCounter == 0) {
       wasPaused = true;
